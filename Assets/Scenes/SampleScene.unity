@@ -672,8 +672,6 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: BubbleSort
       m_Image: {fileID: 0}
-    - m_Text: InsertionSort
-      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -1665,6 +1663,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a232868326aca38898789cc64ce3fe4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blueMat: {fileID: 2100000, guid: 822804a1b047484c99aaf4465b8bb281, type: 2}
+  yellowMat: {fileID: 2100000, guid: 97d8662cbc5b3d1cc8401fc2e26cecfd, type: 2}
+  redMat: {fileID: 2100000, guid: eb4e0e9a905ec3257bb22e9dacbdc0f4, type: 2}
 --- !u!114 &1449497593
 MonoBehaviour:
   m_ObjectHideFlags: 0

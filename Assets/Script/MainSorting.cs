@@ -10,6 +10,9 @@ public class MainSorting : MonoBehaviour
 	float[] values = new float[50]; // Values to sort
 	float maxValue;
 	GameObject[] CubeArray = new GameObject[lenList]; // List of cubes
+	public Material blueMat;
+	public Material yellowMat;
+	public Material redMat;
 	
 	
 	// Get sorting algorithm from dropdown
@@ -19,51 +22,118 @@ public class MainSorting : MonoBehaviour
 	}
 	
 	//---------------------------------------------------------
+	
+	// Swap 
+	private static void Swap(ref float[] arr, int left, int right)
+	{
+		float temp = arr[left];
+            	arr[left] = arr[right];
+            	arr[right] = temp;
+	}
+	
 	// Implementation of quick sort
-	void quickSort(float[] arr, int low, int high)
+	IEnumerator quickSort(float[] arr)
 	{
-		
-		if(low<high)
-		{
-			int partIndex = StartCoroutine(partition(arr,low,high));
+		System.Collections.Stack stack = new System.Collections.Stack();
+            	float pivot;
+            	int pivotIndex = 0;
+            	int leftIndex = pivotIndex + 1;
+            	int rightIndex = arr.Length - 1;
 
-			quickSort(arr,low,partIndex-1);
-			quickSort(arr,partIndex+1,high);
+            	stack.Push(pivotIndex);//Push always with left and right
+            	stack.Push(rightIndex);
+
+            	int leftIndexOfSubSet, rightIndexOfSubset;
+		
 			
-		}
-	}
-	
-	IEnumerator partition(float[] arr, int low, int high)
-	{
-	
-		// Select Pivot
-		float pivot = arr[high];		
-		
-		int lowIndex = (low-1);
-		
-		//CubeArray[lowIndex].GetComponent<Renderer>().material.SetColor("_Color",Color.green);
-		
-		// Reorder
-		for (int i = low; i < high; i++)
-		{
-		
-			if(arr[i] <= pivot)
+            	while (stack.Count > 0)
+            	{
+			// Update positions
+			yield return new WaitForSeconds(0.2f);
+			for (int k = 0; k < lenList; k++)
 			{
-				lowIndex++;
-				
-				float temp = arr[lowIndex];
-				arr[lowIndex] = arr[i];
-				arr[i] = temp;
+				CubeArray[k].transform.position = new Vector3((float)(k-lenList/2)/5, 2.5f*arr[k]/maxValue-5.0f/2, 0);
+        			CubeArray[k].transform.localScale = new Vector3(0.1f, 5.0f*arr[k]/maxValue, 1.0f);
 			}
-		}
-		
-		float temp1 = arr[lowIndex+1];
-		arr[lowIndex+1] = arr[high];
-		arr[high] = temp1;
-		
-		return lowIndex+1;
-	}
-	
+			CubeArray[pivotIndex].GetComponent<MeshRenderer>().material = yellowMat;
+
+                	rightIndexOfSubset = (int)stack.Pop();//pop always with right and left
+                	leftIndexOfSubSet = (int)stack.Pop();
+
+                	leftIndex = leftIndexOfSubSet + 1;
+                	pivotIndex = leftIndexOfSubSet;
+                	rightIndex = rightIndexOfSubset;
+
+                	pivot = arr[pivotIndex];
+
+              		if (leftIndex > rightIndex)
+               		continue;
+
+                	while (leftIndex < rightIndex)
+                	{
+                    		while ((leftIndex <= rightIndex) && (arr[leftIndex] <= pivot))
+                        		leftIndex++;	
+
+                    		while ((leftIndex <= rightIndex) && (arr[rightIndex] >= pivot))
+                        		rightIndex--;
+
+                    		if (rightIndex >= leftIndex)
+                    		{
+                    			// Change color of swap
+					CubeArray[leftIndex].GetComponent<MeshRenderer>().material = redMat;
+        				CubeArray[rightIndex].GetComponent<MeshRenderer>().material = redMat;
+					
+                    			Swap(ref arr, leftIndex, rightIndex);
+                    			yield return new WaitForSeconds(0.2f);
+					for (int k = 0; k < lenList; k++)
+					{
+						CubeArray[k].transform.position = new Vector3((float)(k-lenList/2)/5, 2.5f*arr[k]/maxValue-5.0f/2, 0);
+        					CubeArray[k].transform.localScale = new Vector3(0.1f, 5.0f*arr[k]/maxValue, 1.0f);
+        					// Reset Color
+        					if (k!=pivot)
+        					{
+        						CubeArray[k].GetComponent<MeshRenderer>().material = blueMat;
+        					}
+					}
+                    		}
+                        		
+                	}
+
+                	if (pivotIndex <= rightIndex)
+                    		if( arr[pivotIndex] > arr[rightIndex])
+                    		{
+                    			// Change color of swap
+					CubeArray[leftIndex].GetComponent<MeshRenderer>().material = redMat;
+        				CubeArray[rightIndex].GetComponent<MeshRenderer>().material = redMat;
+        				
+                    			Swap(ref arr, pivotIndex, rightIndex);
+                    			yield return new WaitForSeconds(0.2f);
+					for (int k = 0; k < lenList; k++)
+					{
+						CubeArray[k].transform.position = new Vector3((float)(k-lenList/2)/5, 2.5f*arr[k]/maxValue-5.0f/2, 0);
+        					CubeArray[k].transform.localScale = new Vector3(0.1f, 5.0f*arr[k]/maxValue, 1.0f);
+        					// Reset Color
+        					if (k!=pivot)
+        					{
+        						CubeArray[k].GetComponent<MeshRenderer>().material = blueMat;
+        					}
+					}
+                    		}
+                       
+                	if (leftIndexOfSubSet < rightIndex)
+                	{
+                    		stack.Push(leftIndexOfSubSet);
+                    		stack.Push(rightIndex - 1);
+                	}
+
+                	if (rightIndexOfSubset > rightIndex)
+                	{
+                    		stack.Push(rightIndex + 1);
+                 	   	stack.Push(rightIndexOfSubset);
+                	}
+            	}
+        }
+
 	//---------------------------------------------------------
 	// Implementation of bubble sort
 	IEnumerator bubbleSort(float[] arr)
@@ -80,7 +150,7 @@ public class MainSorting : MonoBehaviour
 					arr[j+1] = temp; 
 				}
 			}
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.2f);
 			for (int k = 0; k < len; k++)
 			{
 				CubeArray[k].transform.position = new Vector3((float)(k-lenList/2)/5, 2.5f*arr[k]/maxValue-5.0f/2, 0);
@@ -95,15 +165,6 @@ public class MainSorting : MonoBehaviour
 	{}
 
 	//---------------------------------------------------------
-	
-	private void UpdatePositionsDelay()
-	{
-		for (int i = 0; i < lenList; i ++)
-		{
-			CubeArray[i].transform.position = new Vector3((float)(i-lenList/2)/5, 2.5f*values[i]/maxValue-5.0f/2, 0);
-        		CubeArray[i].transform.localScale = new Vector3(0.1f, 5.0f*values[i]/maxValue, 1.0f);
-        	}
-	}
 	
 	
 	public void startSorting()
@@ -122,6 +183,7 @@ public class MainSorting : MonoBehaviour
 			CubeArray[i] = GameObject.CreatePrimitive(PrimitiveType.Cube);
 			CubeArray[i].transform.position = new Vector3((float)(i-lenList/2)/5, 2.5f*values[i]/maxValue-5.0f/2, 0);
         		CubeArray[i].transform.localScale = new Vector3(0.1f, 5.0f*values[i]/maxValue, 1.0f);
+        		CubeArray[i].GetComponent<MeshRenderer>().material = blueMat;
 		}
 		//GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
@@ -129,11 +191,11 @@ public class MainSorting : MonoBehaviour
 		// Call appropriate sorting algorithm
 		if(sortAlgo==0)
 		{
-			quickSort(values,0,lenList-1);
+			StartCoroutine(quickSort(values));
 		}
 		if(sortAlgo==1)
 		{
-			StartCoroutine(bubbleSort(values));;
+			StartCoroutine(bubbleSort(values));
 		}
 		if(sortAlgo==2)
 		{
