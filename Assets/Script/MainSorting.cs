@@ -25,7 +25,7 @@ public class MainSorting : MonoBehaviour
 		
 		if(low<high)
 		{
-			int partIndex = partition(arr,low,high);
+			int partIndex = StartCoroutine(partition(arr,low,high));
 
 			quickSort(arr,low,partIndex-1);
 			quickSort(arr,partIndex+1,high);
@@ -33,7 +33,7 @@ public class MainSorting : MonoBehaviour
 		}
 	}
 	
-	int partition(float[] arr, int low, int high)
+	IEnumerator partition(float[] arr, int low, int high)
 	{
 	
 		// Select Pivot
@@ -66,7 +66,7 @@ public class MainSorting : MonoBehaviour
 	
 	//---------------------------------------------------------
 	// Implementation of bubble sort
-	void bubbleSort(float[] arr)
+	IEnumerator bubbleSort(float[] arr)
 	{
 		int len = arr.Length;
 		for (int i = 0; i < len; i++)
@@ -80,8 +80,12 @@ public class MainSorting : MonoBehaviour
 					arr[j+1] = temp; 
 				}
 			}
-			CubeArray[i].transform.position = new Vector3((float)(i-lenList/2)/5, 2.5f*arr[i]/maxValue-5.0f/2, 0);
-        		CubeArray[i].transform.localScale = new Vector3(0.1f, 5.0f*arr[i]/maxValue, 1.0f);
+			yield return new WaitForSeconds(0.5f);
+			for (int k = 0; k < len; k++)
+			{
+				CubeArray[k].transform.position = new Vector3((float)(k-lenList/2)/5, 2.5f*arr[k]/maxValue-5.0f/2, 0);
+        			CubeArray[k].transform.localScale = new Vector3(0.1f, 5.0f*arr[k]/maxValue, 1.0f);
+			}
 		}
 	}
 	
@@ -126,26 +130,10 @@ public class MainSorting : MonoBehaviour
 		if(sortAlgo==0)
 		{
 			quickSort(values,0,lenList-1);
-			Invoke("UpdatePositionsDelay",1.0f);
 		}
 		if(sortAlgo==1)
 		{
-			//bubbleSort(values);
-			for (int i = 0; i < lenList; i++)
-			{
-				for(int j = 0; j < lenList-1; j++)
-				{
-					if(values[j]>values[j+1])
-					{
-						float temp = values[j];
-						values[j] = values[j+1];
-						values[j+1] = temp; 
-					}
-				}
-				
-				Invoke("UpdatePositionsDelay",15.0f);
-			}
-			Invoke("UpdatePositionsDelay",1.0f);
+			StartCoroutine(bubbleSort(values));;
 		}
 		if(sortAlgo==2)
 		{
